@@ -1,0 +1,30 @@
+{
+  "name": "wg-easy-api",
+  "version": "1.0.0",
+  "description": "Wg-easy api NodeJS",
+  "keywords": [
+    "nodejs",
+    "wgeasy",
+    "wg-easy",
+    "api",
+    "wg-easy-api"
+  ],
+  "homepage": "https://github.com/fluxnetru/wg-easy-api#readme",
+  "bugs": {
+    "url": "https://github.com/fluxnetru/wg-easy-api/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fluxnetru/wg-easy-api.git"
+  },
+  "license": "MIT",
+  "author": "fluxnetru",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
+}
