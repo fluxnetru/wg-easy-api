@@ -1,6 +1,6 @@
 {
   "name": "wg-easy-api",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Wg-easy api NodeJS",
   "keywords": [
     "nodejs",
@@ -27,6 +27,9 @@
     "lint": "eslint src/*.{js,ts}",
     "lint:fix": "eslint src/*.{js,ts} --fix"
   },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
     "@typescript-eslint/eslint-plugin": "^8.29.0",
@@ -35,7 +38,6 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-jest": "^28.11.0",
     "globals": "^16.0.0",
-    "node-fetch": "^2.7.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.29.0"
   }

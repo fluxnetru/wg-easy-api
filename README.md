@@ -48,14 +48,14 @@ Install via npm:
 ## Requirements
 
 - Node.js 12.x or higher.
-- `node-fetch` (^3.3.2) - Included as a dependency.
+- `node-fetch` (^2.7.0) - Included as a dependency.
 - A running WG-Easy server (typically on port 51821).
 
 ## Usage
 
 Basic example with password:
 
-```
+```js
 const WireGuardAPI = require('wg-easy-api');
 
 async function example() {
@@ -74,7 +74,7 @@ example();
 
 Using cookies:
 
-```
+```js
 const api = new WireGuardAPI('https', 'example.com', 51821, undefined, 'connect.sid=s%3A...');
 const clients = await api.getClients();
 console.log(clients);
@@ -82,7 +82,7 @@ console.log(clients);
 
 Error handling:
 
-```
+```js
 try {
     const clients = await api.getClients();
 } catch (error) {

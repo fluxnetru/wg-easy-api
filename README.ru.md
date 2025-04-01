@@ -48,48 +48,48 @@ Web-docs:
 ## Требования
 
 - Node.js 12.x или выше.
-- <code>node-fetch</code> (^3.3.2) - Включено как зависимость.
+- <code>node-fetch</code> (^2.7.0) - Включено как зависимость.
 - Запущенный сервер WG-Easy (обычно на порту 51821).
 
 ## Использование
 
 Базовый пример с паролем:
 
-<code>
+```js
 const WireGuardAPI = require('wg-easy-api');
 
 async function example() {
-    const api = new WireGuardAPI('https', 'example.com', 51821, 'ваш-пароль');
+    const api = new WireGuardAPI('https', 'example.com', 51821, 'your-password');
     try {
-        const auth = await api.initSession({ password: 'ваш-пароль' });
+        const auth = await api.initSession({ password: 'your-password' });
         const clients = await api.getClients();
-        console.log('Клиенты:', JSON.stringify(clients, null, 2));
+        console.log('Clients:', JSON.stringify(clients, null, 2));
     } catch (error) {
-        console.error('Ошибка:', JSON.parse(error.message));
+        console.error('Error:', JSON.parse(error.message));
     }
 }
 
 example();
-</code>
+```
 
 Использование куки:
 
-<code>
+```js
 const api = new WireGuardAPI('https', 'example.com', 51821, undefined, 'connect.sid=s%3A...');
 const clients = await api.getClients();
 console.log(clients);
-</code>
+```
 
 Обработка ошибок:
 
-<code>
+```js
 try {
     const clients = await api.getClients();
 } catch (error) {
     const err = JSON.parse(error.message);
     console.error(err.error, err.statusCode);
 }
-</code>
+```
 
 ## Методы API
 
