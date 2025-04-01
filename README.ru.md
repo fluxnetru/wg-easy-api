@@ -1,4 +1,4 @@
-# WireGuard API Client
+# WireGuard API Клиент
 
 [![npm version](https://img.shields.io/npm/v/wg-easy-api.svg)](https://www.npmjs.com/package/wg-easy-api)
 [![GitHub license](https://img.shields.io/github/license/fluxnetru/wg-easy-api.svg)](https://github.com/fluxnetru/wg-easy-api/blob/main/LICENSE)
@@ -7,11 +7,33 @@
 
 Русский | [English](https://github.com/fluxnetru/wg-easy-api/blob/main/README.md)
 
-Библиотека Node.js для взаимодействия с API WireGuard, разработанная для легкой интеграции с серверами wg-easy.
+Надежная библиотека клиента на Node.js для взаимодействия с API WireGuard, разработанная для серверов WG-Easy.
+
+## Содержание
+
+- [О проекте](#о-проекте)
+- [Функции](#функции)
+- [Установка](#установка)
+- [Требования](#требования)
+- [Использование](#использование)
+- [Методы API](#методы-api)
+- [Формат ответа](#формат-ответа)
+- [Советы по отладке](#советы-по-отладке)
+- [Вклад](#вклад)
+- [Лицензия](#лицензия)
+- [Список изменений](#список-изменений)
 
 ## О проекте
 
-Эта библиотека предоставляет удобный способ взаимодействия с API WireGuard, предоставляемым [WG-Easy](https://github.com/wg-easy/wg-easy), простым и удобным инструментом управления VPN WireGuard. WG-Easy упрощает настройку и управление VPN-серверами WireGuard, а данный клиент API позволяет разработчикам программно управлять его функциями, такими как управление клиентами, сессиями и конфигурациями.
+Эта библиотека предоставляет программный интерфейс для API WireGuard, реализованного в [WG-Easy](https://github.com/wg-easy/wg-easy).
+
+## Функции
+
+- Автоматическое управление сессиями с повторными попытками при ошибках 401.
+- Полное покрытие конечных точек API WG-Easy.
+- Гибкая аутентификация через пароль или куки.
+- Структурированная обработка ошибок.
+- Поддержка TypeScript.
 
 ## Установка
 
@@ -21,24 +43,21 @@
 
 ## Требования
 
-- Node.js >= 12.x
-- <code>node-fetch</code> (автоматически устанавливается как зависимость)
+- Node.js 12.x или выше.
+- <code>node-fetch</code> (^3.3.2) - Включено как зависимость.
+- Запущенный сервер WG-Easy (обычно на порту 51821).
 
 ## Использование
 
-### С <code>node-fetch</code> (по умолчанию)
+Базовый пример с паролем:
 
-```js
-const WireGuardAPI = require('wg-easy-api'); // commonjs
-// import WireGuardAPI from 'wg-easy-api'; // module
-
-const api = new WireGuardAPI(
-    'http://example.com:58121',
-    'connect.sid=s%3Ald-A-H4OHXadNrjNx1kDDvWPX2yJGqTx...'
-);
+<code>
+const WireGuardAPI = require('wg-easy-api');
 
 async function example() {
+    const api = new WireGuardAPI('https', 'example.com', 51821, 'ваш-пароль');
     try {
+        const auth = await api.initSession({ password: 'ваш-пароль' });
         const clients = await api.getClients();
         console.log('Клиенты:', JSON.stringify(clients, null, 2));
     } catch (error) {
@@ -47,94 +66,61 @@ async function example() {
 }
 
 example();
-```
+</code>
 
-### С <code>axios</code>
+Использование куки:
 
-Для использования с <code>axios</code> необходимо изменить метод <code>call</code>. Вот пример:
+<code>
+const api = new WireGuardAPI('https', 'example.com', 51821, undefined, 'connect.sid=s%3A...');
+const clients = await api.getClients();
+console.log(clients);
+</code>
 
-```js
-const axios = require('axios');
-const WireGuardAPI = require('wg-easy-api'); // commonjs
-// import WireGuardAPI from 'wg-easy-api'; // module
+Обработка ошибок:
 
-// Переопределяем метод call
-WireGuardAPI.prototype.call = async function ({ method, path, body }) {
-    const url = `${this.baseUrl}/api${path}`;
-    try {
-        const res = await axios({
-            method,
-            url,
-            headers: {
-                'Content-Type': 'application/json',
-                'Cookie': this.cookies
-            },
-            data: body
-        });
-
-        return { status: 'success', data: res.data };
-    } catch (error) {
-        return {
-            status: 'error',
-            error: error.response?.data?.error || error.message,
-            statusCode: error.response?.status,
-            details: error.response?.data
-        };
-    }
-};
-
-const api = new WireGuardAPI(
-    'http://example.com:58121',
-    'connect.sid=s%3Ald-A-H4OHXadNrjNx1kDDvWPX2yJGqTx...'
-);
-
-async function example() {
+<code>
+try {
     const clients = await api.getClients();
-    console.log('Клиенты:', JSON.stringify(clients, null, 2));
+} catch (error) {
+    const err = JSON.parse(error.message);
+    console.error(err.error, err.statusCode);
 }
-
-example();
-```
+</code>
 
 ## Методы API
 
-Все методы возвращают Promise, разрешающийся в объект с <code>{ status, data|error, [statusCode], [details] }</code>.
+Все методы возвращают <code>Promise</code>, разрешающийся в <code>{ status, data|error, [statusCode], [details] }</code>.
 
-- <code>getClients()</code>: Получает список клиентов WireGuard.
-- <code>createClient({ name })</code>: Создает нового клиента с указанным именем.
-- <code>deleteClient({ clientId })</code>: Удаляет клиента по ID.
-- <code>enableClient({ clientId })</code>: Включает клиента.
-- <code>disableClient({ clientId })</code>: Отключает клиента.
-- <code>updateClientName({ clientId, name })</code>: Обновляет имя клиента.
-- <code>updateClientAddress({ clientId, address })</code>: Обновляет адрес клиента.
-- <code>restoreConfiguration(file)</code>: Восстанавливает конфигурацию WireGuard.
-- <code>getSession()</code>: Получает информацию о текущей сессии.
-- <code>createSession({ password })</code>: Создает новую сессию.
-- <code>deleteSession()</code>: Удаляет текущую сессию.
-- <code>getRelease()</code>: Получает информацию о релизе.
-- <code>getLang()</code>: Получает язык интерфейса.
-- <code>getUITrafficStats()</code>: Получает статистику трафика UI.
-- <code>getChartType()</code>: Получает тип графика UI.
+### Управление сессиями
 
-## Обработка ошибок
+- **<code>initSession({ password })</code>**  
+  Вход на сервер WG-Easy с паролем. Автоматически обновляет куки.  
+  - **Параметры**: <code>{ password: string }</code> - Пароль WG-Easy.  
+  - **Возвращает**: <code>{ status: 'success', data: any }</code> или ошибка (например, 401 при неверном пароле).  
+  - **Пример**:  
+    <code>await api.initSession({ password: 'мойПароль' }); // { status: 'success', data: { success: true } }</code>
 
-Ошибки возвращаются в структурированном формате:
+- **<code>getSession()</code>**  
+  Проверяет статус текущей сессии.  
+  - **Возвращает**: <code>{ status: 'success', data: { authenticated: boolean } }</code> или ошибка.  
+  - **Пример**:  
+    <code>await api.getSession(); // { status: 'success', data: { authenticated: true } }</code>
 
-```json
-{
-    "status": "error",
-    "error": "Внутренняя ошибка сервера",
-    "statusCode": 500,
-    "details": { /* дополнительная информация об ошибке */ },
-    "url": "http://example.com:58121/api/wireguard/client",
-    "method": "GET"
-}
-```
+## Формат ответа
 
-## Как внести вклад
+- **Успех**: <code>{ status: 'success', data: any }</code>
+- **Ошибка**: <code>{ status: 'error', error: string, statusCode: number, details: any }</code>
 
-Приглашаем отправлять вопросы или запросы на включение изменений через [GitHub](https://github.com/fluxnetru/wg-easy-api).
+## Советы по отладке
+
+- Проверьте <code>protocol</code>, <code>ip</code>, <code>port</code> в конструкторе.
+- Запишите <code>api.cookies</code> после <code>initSession</code>.
+- Тестируйте с помощью <code>curl</code> для проверки ответов сервера.
+
+## Вклад
+
+Форкните и создайте пулл-реквест на [GitHub](https://github.com/fluxnetru/wg-easy-api).
 
 ## Лицензия
 
-MIT © [fluxnetru](https://github.com/fluxnetru)
+MIT © [fluxnetru](https://github.com/fluxnetru).

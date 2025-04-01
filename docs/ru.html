@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WireGuard API Клиент | Профессиональное управление VPN</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
+    <style>
+        :root {
+            --primary: #2a5ee8;
+            --primary-dark: #1a4bc4;
+            --secondary: #00c4cc;
+            --dark: #1a1d28;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --success: #28a745;
+            --warning: #ffc107;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7ff;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            color: var(--secondary);
+        }
+
+        .nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .nav a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-toggle {
+            display: none;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .hero {
+            padding: 6rem 0 4rem;
+            background: white;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-image {
+            flex: 1;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(42, 94, 232, 0.4);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            margin-left: 1rem;
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .badges {
+            margin: 1rem 0;
+        }
+
+        .badges img {
+            margin-right: 0.5rem;
+            height: 20px;
+        }
+
+        .features {
+            padding: 5rem 0;
+            background: linear-gradient(to bottom, #f5f7ff, white);
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            color: var(--gray);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+
+        .code-section {
+            padding: 5rem 0;
+            background: var(--dark);
+            color: white;
+        }
+
+        .code-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-tab {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            color: var(--gray);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .code-tab.active {
+            color: white;
+            border-bottom-color: var(--secondary);
+        }
+
+        .code-content {
+            display: none;
+        }
+
+        .code-content.active {
+            display: block;
+        }
+
+        pre {
+            background: #282c34;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            pre {
+                overflow-x: hidden;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .api-reference {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .method-card {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary);
+        }
+
+        .method-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .method-type {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-right: 1rem;
+        }
+
+        .get { background: rgba(40, 167, 69, 0.1); color: var(--success); }
+        .post { background: rgba(0, 196, 204, 0.1); color: var(--secondary); }
+        .put { background: rgba(255, 193, 7, 0.1); color: var(--warning); }
+        .delete { background: rgba(220, 53, 69, 0.1); color: var(--danger); }
+
+        .method-path {
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--gray);
+        }
+
+        .params-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .params-table th, .params-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .params-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .social-links a:hover {
+            color: var(--secondary);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 2rem;
+            background: var(--success);
+            color: white;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+        }
+
+        @media (max-width: 1000px) {
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav-toggle {
+                display: block;
+                position: absolute;
+                right: 20px;
+                top: 1.5rem;
+            }
+
+            .nav {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                padding: 1rem 0;
+                background: var(--primary-dark);
+            }
+
+            .nav.active {
+                display: flex;
+            }
+
+            .hero-content {
+                flex-direction: column;
+            }
+
+            .hero-image img {
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <span>WireGuard API</span>
+            </div>
+            <button class="nav-toggle" aria-label="Переключить навигацию">
+                <i class="fas fa-bars"></i>
+            </button>
+            <nav class="nav">
+                <a href="#about">О проекте</a>
+                <a href="#features">Функции</a>
+                <a href="#installation">Установка</a>
+                <a href="#usage">Использование</a>
+                <a href="#api">Справочник API</a>
+                <a href="https://github.com/fluxnetru/wg-easy-api" target="_blank">GitHub</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="about">
+        <div class="container hero-content">
+            <div class="hero-text">
+                <h1>WireGuard API Клиент</h1>
+                <p class="tagline">Надежная библиотека клиента на Node.js для взаимодействия с API WireGuard, разработанная для серверов WG-Easy</p>
+                <div class="badges">
+                    <img src="https://img.shields.io/npm/v/wg-easy-api.svg" alt="Версия npm">
+                    <img src="https://img.shields.io/github/license/fluxnetru/wg-easy-api.svg" alt="Лицензия GitHub">
+                    <img src="https://img.shields.io/github/issues/fluxnetru/wg-easy-api.svg" alt="Проблемы GitHub">
+                    <img src="https://img.shields.io/npm/dt/wg-easy-api.svg" alt="Загрузки">
+                </div>
+                <div>
+                    <a href="#installation" class="btn">Начать</a>
+                    <a href="https://github.com/fluxnetru/wg-easy-api" target="_blank" class="btn btn-secondary">Посмотреть на GitHub</a>
+                </div>
+                <p style="margin-top: 1rem;">
+                    <span>
+                        <a href="https://fluxnetru.github.io/wg-easy-api/ru.html">Русский</a>
+                        |
+                        <a href="https://fluxnetru.github.io/wg-easy-api/en.html">English</a>
+                    </span>
+                </p>
+            </div>
+            <div class="hero-image">
+                <img src="https://wireguard.com/img/wireguard.svg" alt="Логотип WireGuard" style="max-width: 400px;">
+            </div>
+        </div>
+    </section>
+
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Функции</h2>
+                <p class="section-subtitle">Мощные инструменты для управления вашим WireGuard VPN</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-sync"></i></div>
+                    <h3>Автоматическое управление сессиями</h3>
+                    <p>Автоматически обрабатывает повторные попытки при ошибках 401</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-code"></i></div>
+                    <h3>Полное покрытие API</h3>
+                    <p>Полная реализация конечных точек WG-Easy</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-key"></i></div>
+                    <h3>Гибкая аутентификация</h3>
+                    <p>Поддержка аутентификации через пароль и куки</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h3>Структурированная обработка ошибок</h3>
+                    <p>Подробные ответы об ошибках для легкой отладки</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-cogs"></i></div>
+                    <h3>Поддержка TypeScript</h3>
+                    <p>Включены полные определения типов</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="code-section" id="installation">
+        <div class="container">
+            <div class="section-title">
+                <h2>Установка и требования</h2>
+                <p class="section-subtitle">Начните работу с WireGuard API Клиентом</p>
+            </div>
+            <div class="code-tabs">
+                <button class="code-tab active" onclick="openTab(event, 'install-tab')">Установка</button>
+                <button class="code-tab" onclick="openTab(event, 'reqs-tab')">Требования</button>
+            </div>
+            <div id="install-tab" class="code-content active">
+                <pre><code class="language-bash">npm install wg-easy-api</code></pre>
+            </div>
+            <div id="reqs-tab" class="code-content">
+                <ul>
+                    <li>Node.js 12.x или выше</li>
+                    <li><code>node-fetch</code> (^3.3.2) - Включено как зависимость</li>
+                    <li>Запущенный сервер WG-Easy (обычно на порту 51821)</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section class="code-section" id="usage">
+        <div class="container">
+            <div class="section-title">
+                <h2>Примеры использования</h2>
+                <p class="section-subtitle">Узнайте, как использовать WireGuard API Клиент</p>
+            </div>
+            <div class="code-tabs">
+                <button class="code-tab active" onclick="openTab(event, 'basic-tab')">Базовый пример</button>
+                <button class="code-tab" onclick="openTab(event, 'cookies-tab')">Использование куки</button>
+                <button class="code-tab" onclick="openTab(event, 'error-tab')">Обработка ошибок</button>
+            </div>
+            <div id="basic-tab" class="code-content active">
+                <pre><code class="language-javascript">const WireGuardAPI = require('wg-easy-api');
+
+async function example() {
+    const api = new WireGuardAPI('https', 'example.com', 51821, 'ваш-пароль');
+    try {
+        const auth = await api.initSession({ password: 'ваш-пароль' });
+        console.log(auth);
+        const clients = await api.getClients();
+        console.log('Клиенты:', JSON.stringify(clients, null, 2));
+    } catch (error) {
+        console.error('Ошибка:', JSON.parse(error.message));
+    }
+}
+
+example();</code></pre>
+            </div>
+            <div id="cookies-tab" class="code-content">
+                <pre><code class="language-javascript">const api = new WireGuardAPI('https', 'example.com', 51821, undefined, 'connect.sid=s%3A...');
+const clients = await api.getClients();
+console.log(clients);</code></pre>
+            </div>
+            <div id="error-tab" class="code-content">
+                <pre><code class="language-javascript">try {
+    const clients = await api.getClients();
+} catch (error) {
+    const err = JSON.parse(error.message);
+    console.error(err.error, err.statusCode);
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <section class="api-reference" id="api">
+        <div class="container">
+            <div class="section-title">
+                <h2>Справочник API</h2>
+                <p class="section-subtitle">Полная документация по всем методам</p>
+            </div>
+
+            <h3>Формат ответа</h3>
+            <ul>
+                <li><strong>Успех</strong>: <code>{ status: 'success', data: any }</code></li>
+                <li><strong>Ошибка</strong>: <code>{ status: 'error', error: string, statusCode: number, details: any }</code></li>
+            </ul>
+
+            <h3>Управление сессиями</h3>
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type post">POST</span>
+                    <span class="method-path">/api/session</span>
+                </div>
+                <p>Вход на сервер WG-Easy с паролем. Автоматически обновляет куки.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>password</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Пароль WG-Easy</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.initSession({ password: 'мойПароль' }); // { status: 'success', data: { success: true } }</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type get">GET</span>
+                    <span class="method-path">/api/session</span>
+                </div>
+                <p>Проверяет статус текущей сессии.</p>
+                <pre><code class="language-javascript">await api.getSession(); // { status: 'success', data: { authenticated: true } }</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type post">POST</span>
+                    <span class="method-path">/api/session</span>
+                </div>
+                <p>Создает новую сессию без автоматического обновления куки.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>password</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Пароль WG-Easy</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.createSession({ password: 'мойПароль' });</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type delete">DELETE</span>
+                    <span class="method-path">/api/session</span>
+                </div>
+                <p>Выход из системы путем удаления сессии.</p>
+                <pre><code class="language-javascript">await api.deleteSession(); // { status: 'success', data: null }</code></pre>
+            </div>
+
+            <h3>Операции с клиентами</h3>
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type get">GET</span>
+                    <span class="method-path">/api/wireguard/client</span>
+                </div>
+                <p>Список всех клиентов WireGuard с преобразованием временных меток в объекты Date.</p>
+                <pre><code class="language-javascript">await api.getClients(); // { status: 'success', data: [{ id: 'abc', name: 'Клиент1' }] }</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type post">POST</span>
+                    <span class="method-path">/api/wireguard/client</span>
+                </div>
+                <p>Добавляет нового клиента с указанным именем.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>name</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Имя клиента</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.createClient({ name: 'МойНоутбук' });</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type delete">DELETE</span>
+                    <span class="method-path">/api/wireguard/client/{clientId}</span>
+                </div>
+                <p>Удаляет клиента по идентификатору.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>clientId</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Идентификатор клиента</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.deleteClient({ clientId: 'abc' });</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type post">POST</span>
+                    <span class="method-path">/api/wireguard/client/{clientId}/enable</span>
+                </div>
+                <p>Включает клиента для подключения.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>clientId</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Идентификатор клиента</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.enableClient({ clientId: 'abc' });</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type post">POST</span>
+                    <span class="method-path">/api/wireguard/client/{clientId}/disable</span>
+                </div>
+                <p>Отключает клиента.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>clientId</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Идентификатор клиента</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.disableClient({ clientId: 'abc' });</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type put">PUT</span>
+                    <span class="method-path">/api/wireguard/client/{clientId}/name</span>
+                </div>
+                <p>Изменяет имя клиента.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>clientId</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Идентификатор клиента</td>
+                        </tr>
+                        <tr>
+                            <td>name</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Новое имя</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.updateClientName({ clientId: 'abc', name: 'НовоеИмя' });</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type put">PUT</span>
+                    <span class="method-path">/api/wireguard/client/{clientId}/address</span>
+                </div>
+                <p>Обновляет IP-адрес клиента.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>clientId</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Идентификатор клиента</td>
+                        </tr>
+                        <tr>
+                            <td>address</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Новый IP-адрес</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.updateClientAddress({ clientId: 'abc', address: '10.0.0.3' });</code></pre>
+            </div>
+
+            <h3>Конфигурация и QR-код</h3>
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type get">GET</span>
+                    <span class="method-path">/api/wireguard/client/{clientId}/configuration</span>
+                </div>
+                <p>Получает файл конфигурации клиента (.conf) в виде текста.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>clientId</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Идентификатор клиента</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.getClientConfig({ clientId: 'abc' }); // { status: 'success', data: '[Interface]...' }</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type get">GET</span>
+                    <span class="method-path">/api/wireguard/client/{clientId}/qrcode.svg</span>
+                </div>
+                <p>Получает конфигурацию клиента в виде SVG QR-кода.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>clientId</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Идентификатор клиента</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.getClientQRCode({ clientId: 'abc' }); // { status: 'success', data: '<svg>...' }</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type put">PUT</span>
+                    <span class="method-path">/api/wireguard/restore</span>
+                </div>
+                <p>Восстанавливает конфигурацию сервера из строки.</p>
+                <table class="params-table">
+                    <thead>
+                        <tr>
+                            <th>Параметр</th>
+                            <th>Тип</th>
+                            <th>Обязательно</th>
+                            <th>Описание</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>file</td>
+                            <td>string</td>
+                            <td>Да</td>
+                            <td>Содержимое файла конфигурации</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <pre><code class="language-javascript">await api.restoreConfiguration('[Interface]...');</code></pre>
+            </div>
+
+            <h3>Разное</h3>
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type get">GET</span>
+                    <span class="method-path">/api/release</span>
+                </div>
+                <p>Получает версию WG-Easy.</p>
+                <pre><code class="language-javascript">await api.getRelease(); // { status: 'success', data: { version: '7' } }</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type get">GET</span>
+                    <span class="method-path">/api/lang</span>
+                </div>
+                <p>Получает язык интерфейса.</p>
+                <pre><code class="language-javascript">await api.getLang(); // { status: 'success', data: { lang: 'ru' } }</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type get">GET</span>
+                    <span class="method-path">/api/ui-traffic-stats</span>
+                </div>
+                <p>Получает статистику трафика.</p>
+                <pre><code class="language-javascript">await api.getUITrafficStats(); // { status: 'success', data: { bytesSent: 12345 } }</code></pre>
+            </div>
+
+            <div class="method-card">
+                <div class="method-header">
+                    <span class="method-type get">GET</span>
+                    <span class="method-path">/api/ui-chart-type</span>
+                </div>
+                <p>Получает тип диаграммы интерфейса.</p>
+                <pre><code class="language-javascript">await api.getChartType(); // { status: 'success', data: { type: 'line' } }</code></pre>
+            </div>
+
+            <h3>Советы по отладке</h3>
+            <ul>
+                <li>Проверьте <code>protocol</code>, <code>ip</code>, <code>port</code> в конструкторе.</li>
+                <li>Запишите <code>api.cookies</code> после <code>initSession</code>.</li>
+                <li>Тестируйте с помощью <code>curl</code> для проверки ответов сервера.</li>
+            </ul>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#about">О проекте</a>
+                <a href="#features">Функции</a>
+                <a href="#installation">Установка</a>
+                <a href="#usage">Использование</a>
+                <a href="#api">Справочник API</a>
+                <a href="https://github.com/fluxnetru/wg-easy-api/issues">Вклад</a>
+                <a href="https://github.com/fluxnetru/wg-easy-api/blob/main/LICENSE">Лицензия</a>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/fluxnetru" target="_blank"><i class="fab fa-github"></i></a>
+            </div>
+            <p>MIT © <a href="https://github.com/fluxnetru">fluxnetru</a> 2025</p>
+        </div>
+    </footer>
+
+    <div class="notification" id="copyNotification">Скопировано в буфер обмена!</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+
+        // Адаптивное меню
+        const navToggle = document.querySelector('.nav-toggle');
+        const nav = document.querySelector('.nav');
+
+        navToggle.addEventListener('click', () => {
+            nav.classList.toggle('active');
+            const isOpen = nav.classList.contains('active');
+            navToggle.innerHTML = `<i class="fas fa-${isOpen ? 'times' : 'bars'}"></i>`;
+        });
+
+        // Переключение вкладок
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName("code-content");
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove("active");
+            }
+            const tabs = document.getElementsByClassName("code-tab");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        // Исправленные кнопки копирования
+        document.querySelectorAll('pre').forEach(pre => {
+            const button = document.createElement('button');
+            button.className = 'copy-btn';
+            button.innerHTML = '<i class="fas fa-copy"></i> Копировать';
+            button.addEventListener('click', async () => {
+                try {
+                    const codeElement = pre.querySelector('code');
+                    if (!codeElement) throw new Error('No code element found');
+                    const code = codeElement.textContent;
+                    await navigator.clipboard.writeText(code);
+                    const notification = document.getElementById('copyNotification');
+                    notification.style.display = 'block';
+                    button.innerHTML = '<i class="fas fa-check"></i> Скопировано!';
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                        button.innerHTML = '<i class="fas fa-copy"></i> Копировать';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Ошибка копирования:', err);
+                    button.innerHTML = '<i class="fas fa-times"></i> Ошибка';
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="fas fa-copy"></i> Копировать';
+                    }, 2000);
+                }
+            });
+            pre.appendChild(button);
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'929806614aa4b01c',t:'MTc0MzUwOTg2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
