@@ -7,6 +7,10 @@
 
 Русский | [English](https://github.com/fluxnetru/wg-easy-api/blob/main/README.md)
 
+Web-docs:
+[Русский](https://fluxnetru.github.io/wg-easy-api/ru.html)
+[English](https://fluxnetru.github.io/wg-easy-api/en.html)
+
 Надежная библиотека клиента на Node.js для взаимодействия с API WireGuard, разработанная для серверов WG-Easy.
 
 ## Содержание
