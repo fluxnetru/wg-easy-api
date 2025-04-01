@@ -24,8 +24,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "start": "node src/index.js",
-    "lint": "eslint src/**/*.{js,ts}",
-    "lint:fix": "eslint src/**/*.{js,ts} --fix"
+    "lint": "eslint src/*.{js,ts}",
+    "lint:fix": "eslint src/*.{js,ts} --fix"
   },
   "devDependencies": {
     "@eslint/js": "^9.23.0",
