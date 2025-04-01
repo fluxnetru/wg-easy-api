@@ -23,7 +23,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "start": "node src/index.js",
+    "test": "node test.js",
     "lint": "eslint src/*.{js,ts}",
     "lint:fix": "eslint src/*.{js,ts} --fix"
   },
