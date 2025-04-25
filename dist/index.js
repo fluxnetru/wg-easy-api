@@ -84,6 +84,26 @@ class WireGuardAPI {
             if (res.status === 204) return { status: 'success', data: null };
 
             const text = await res.text();
+
+            // Handle plain text response for configuration endpoints
+            if (path.match(/\/wireguard\/client\/[^\/]+\/configuration$/)) {
+                if (!res.ok) {
+                    if (res.status === 401 && this.password && this.authRetryCount < this.maxAuthRetries) {
+                        this.authRetryCount++;
+                        await this.initSession({ password: this.password });
+                        return this.call({ method, path, body });
+                    }
+                    return {
+                        status: 'error',
+                        error: text || res.statusText,
+                        statusCode: res.status,
+                        details: { message: text }
+                    };
+                }
+                this.authRetryCount = 0;
+                return { status: 'success', data: text };
+            }
+
             let json;
             try {
                 json = text ? JSON.parse(text) : {};
@@ -133,7 +153,9 @@ class WireGuardAPI {
 
     /**
      * Gets the WG-Easy release version. Useful for checking what version the server is running.
-     * Получает версию выпуска WG-Easy. Полезно для проверки, какая версия работает на сервере.
+     * Пол
+
+учает версию выпуска WG-Easy. Полезно для проверки, какая версия работает на сервере.
      * @returns {Promise<Object>} { status: 'success', data: { version: string } } or error | Результат или ошибка
      * @example
      * await api.getRelease()
