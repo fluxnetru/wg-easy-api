@@ -68,25 +68,24 @@ class WireGuardAPI {
             'Content-Type': 'application/json',
             'Cookie': this.cookies
         };
-
+    
         try {
             const res = await fetch(url, {
                 method,
                 headers,
                 body: body ? JSON.stringify(body) : undefined
             });
-
+    
             const setCookie = res.headers.get('set-cookie');
             if (setCookie) {
                 this.cookies = setCookie;
             }
-
+    
             if (res.status === 204) return { status: 'success', data: null };
-
+    
             const text = await res.text();
-
-            // Handle plain text response for configuration endpoints
-            if (path.match(/\/wireguard\/client\/[^\/]+\/configuration$/)) {
+    
+            if (path.match(/\/wireguard\/client\/[^\/]+\/(configuration|qrcode\.svg)$/)) {
                 if (!res.ok) {
                     if (res.status === 401 && this.password && this.authRetryCount < this.maxAuthRetries) {
                         this.authRetryCount++;
@@ -103,14 +102,14 @@ class WireGuardAPI {
                 this.authRetryCount = 0;
                 return { status: 'success', data: text };
             }
-
+    
             let json;
             try {
                 json = text ? JSON.parse(text) : {};
             } catch {
                 throw new Error(`Invalid JSON: ${text} | Некорректный JSON: ${text}`);
             }
-
+    
             if (!res.ok) {
                 if (res.status === 401 && this.password && this.authRetryCount < this.maxAuthRetries) {
                     this.authRetryCount++;
@@ -124,7 +123,7 @@ class WireGuardAPI {
                     details: json
                 };
             }
-
+    
             this.authRetryCount = 0;
             return { status: 'success', data: json };
         } catch (error) {
