@@ -36,6 +36,7 @@ declare module 'wg-easy-api' {
         restoreConfiguration(file: string): Promise<ApiResponse<any>>;
         getClientConfig(params: { clientId: string }): Promise<ApiResponse<string>>;
         getClientQRCode(params: { clientId: string }): Promise<ApiResponse<string>>;
+        getBackup(): Promise<ApiResponse<string>>;
     }
 
     export default WireGuardAPI;
